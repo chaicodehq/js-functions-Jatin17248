@@ -64,17 +64,95 @@
  *   // => "voted!"
  */
 export function createElection(candidates) {
-  // Your code here
+ 
+  const registeredVoters = new Set();
+  const votes = {};
+  candidates.forEach(c => votes[c.id] = 0);
+  const voterVotes = {};
+
+  function registerVoter(voter) {
+    if (!voter || !voter.id || !voter.name || typeof voter.age !== 'number' || voter.age < 18) {
+      return false;
+    }
+    if (registeredVoters.has(voter.id)) {
+      return false;
+    }
+    registeredVoters.add(voter.id);
+    return true;
+  }
+
+  function castVote(voterId, candidateId, onSuccess, onError) {
+    if (!registeredVoters.has(voterId)) {
+      return onError("Voter not registered");
+    }
+    if (!votes.hasOwnProperty(candidateId)) {
+      return onError("Candidate does not exist");
+    }
+    if (voterVotes[voterId]) {
+      return onError("Voter has already voted");
+    }
+    votes[candidateId]++;
+    voterVotes[voterId] = candidateId;
+    return onSuccess({ voterId, candidateId });
+  }
+
+  function getResults(sortFn) {
+    const results = candidates.map(c => ({
+      ...c,
+      votes: votes[c.id]
+    }));
+    if (sortFn) {
+      results.sort(sortFn);
+    } else {
+      results.sort((a, b) => b.votes - a.votes);
+    }
+    return results;
+  }
+
+  function getWinner() {
+    const results = getResults();
+    if (results.length === 0 || results[0].votes === 0) {
+      return null;
+    }
+    return results[0];
+  }
+
+return { registerVoter, castVote, getResults, getWinner };
 }
 
 export function createVoteValidator(rules) {
-  // Your code here
+  return function (voter) {
+    if(voter.age >= 18 && voter.name && voter.age && voter.id) return {valid: true, reason: "allowed"}
+    else if(!voter.age) return {valid: false, reason: "NoAge"}
+    else if(!voter.name) return {valid: false, reason: "NoName"}
+    else if(!voter.id) return {valid: false, reason: "NoId"}
+    else if(voter.age < 18) return {valid: false, reason: "less age"}
+  }
 }
 
 export function countVotesInRegions(regionTree) {
-  // Your code here
+  
+  if(!regionTree || typeof regionTree !== "object") return 0;
+  let total = regionTree.votes || 0;
+
+  if(Array.isArray(regionTree.subRegions)){
+    for(let region of regionTree.subRegions)
+      total += countVotesInRegions(region);
+  }
+
+  return total;
 }
 
 export function tallyPure(currentTally, candidateId) {
-  // Your code here
+ 
+//  *      - PURE FUNCTION: returns NEW tally object with incremented count
+//  *      - currentTally: { "cand1": 5, "cand2": 3, ... }
+//  *      - Return new object where candidateId count is incremented by 1
+//  *      - MUST NOT modify currentTally
+//  *      - If candidateId not in tally, add it with count 1
+
+  const newTally = {...currentTally};
+  newTally[candidateId] = (newTally[candidateId] || 0) + 1;
+  return newTally 
+
 }

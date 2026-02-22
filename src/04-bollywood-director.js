@@ -44,14 +44,58 @@
  *   const pricer = createTicketPricer(200);
  *   pricer("gold", true)  // => 200 * 1.5 * 1.3 = 390
  */
-export function createDialogueWriter(genre) {
-  // Your code here
-}
 
+export function createDialogueWriter(genre) {
+  const abc = (hero, villain) => {
+    if (hero && villain) {
+      return genre === "action"
+        ? `${hero} says: 'Tujhe toh main dekh lunga, ${villain}!'`
+        : genre === "romance"
+          ? `${hero} whispers: '${villain}, tum mere liye sab kuch ho'`
+          : genre === "comedy"
+            ? `${hero} laughs: '${villain} bhai, kya kar rahe ho yaar!'`
+            : genre === "drama"
+              ? `${hero} cries: '${villain}, tune mera sab kuch cheen liya!'`
+              : null;
+    } else {
+      return "...";
+    }
+  };
+  const genres = ["action", "romance", "comedy", "drama"];
+  if (genres.includes(genre)) return abc;
+
+  return null;
+}
 export function createTicketPricer(basePrice) {
-  // Your code here
+if(basePrice <= 0) return null;
+const abc = (seatType, isWeekend = false) =>{
+
+  const price = seatType === "silver" ? basePrice : 
+                seatType === "gold" ? basePrice * 1.5 :
+                seatType === "platinum" ? basePrice * 2 :
+                null;
+  if (price === null) return null; 
+  const finalPrice = isWeekend ? price * 1.3 : price;
+  return Math.round(finalPrice);
+}
+return abc;
 }
 
 export function createRatingCalculator(weights) {
-  // Your code here
+
+  if(typeof weights !== "object" || weights === null) return null;
+  const { story,  acting,  direction, music } = weights;
+  const wStory = story; const wActing = acting; const wDirection = direction; const wMusic = music;
+  const abc = (scores) => {
+    const { story, acting, direction, music } = scores;
+    const fStory = story && wStory ? story * wStory : 0;
+    const fActing = acting && wActing ? acting * wActing : 0;
+    const fDirection = direction && wDirection  ? direction * wDirection  : 0;
+    const fMusic = music && wMusic ? music * wMusic : 0;
+    const weightAvg = fStory + fActing + fDirection + fMusic;
+    return weightAvg;
+  }
+
+  return abc;
+
 }

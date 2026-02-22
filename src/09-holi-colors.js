@@ -53,22 +53,80 @@
  *   // => { name: "red-blue", r: 128, g: 0, b: 128 }
  *   // red and blue objects are UNCHANGED
  */
+
 export function mixColors(color1, color2) {
-  // Your code here
+  if (
+    !color1 || !color2 ||
+    color1 === null ||
+    color2 === null ||
+    color1.r > 255 ||
+    color1.g > 255 ||
+    color1.b > 255 ||
+    color2.r > 255 ||
+    color2.g > 255 ||
+    color2.b > 255 ||
+    color1 === undefined ||
+    color2 === undefined 
+  )
+    return null;
+
+  const newColor = {
+    name: `${color1.name}-${color2.name}`,
+    r: Math.round((color1.r + color2.r) / 2),
+    g: Math.round((color1.g + color2.g) / 2),
+    b: Math.round((color1.b + color2.b) / 2),
+  };
+  return newColor;
 }
 
 export function adjustBrightness(color, factor) {
-  // Your code here
+   if ( !color ||  typeof factor !== "number" ||
+    color === null ||
+    color.r > 255 ||
+    color.g > 255 ||
+    color.b > 255 ||
+    color === undefined) return null;
+  const newColor = {
+    name: color.name,
+    r: Math.min(Math.round(color.r * factor), 255),
+    g: Math.min(Math.round(color.g * factor), 255),
+    b: Math.min(Math.round(color.b * factor), 255),
+   };
+  return newColor;
 }
 
 export function addToPalette(palette, color) {
-  // Your code here
+  if(!Array.isArray(palette)) return [color];
+  if(color === null || color.r > 255 || color.g > 255 ||  color.b > 255 || color === undefined) return [...palette];
+  return [...palette, color]
 }
 
 export function removeFromPalette(palette, colorName) {
-  // Your code here
+  if(!Array.isArray(palette)) return [];
+  const newPalette = palette.filter((palette)=>{
+    return palette.name !== colorName;
+  })
+  return newPalette;
 }
 
 export function mergePalettes(palette1, palette2) {
-  // Your code here
+ 
+//  *      - Merge two palettes into NEW array
+//  *      - No duplicate names (keep first occurrence)
+//  *      - MUST NOT modify either original palette
+//  *      - Agar either not array, treat as empty array
+
+  const nPalette1 = Array.isArray(palette1) ? palette1 : [] 
+  const nPalette2 = Array.isArray(palette2) ? palette2 : [] 
+  const merged = [...nPalette1, ...nPalette2];
+
+  const seen = new Set();
+  return merged.reduce((acc, current) =>{
+    if(!seen.has(current.name)){
+      seen.add(current.name);
+      acc.push(current)
+    }
+    return acc;
+  }, [])
+
 }
